@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Planilla de Empujes Sísmicos MKS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f7fa;
+    }
+    h1 {
+      color: #1f2937;
+      margin-bottom: 20px;
+    }
+    .sheet {
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 16px;
+      max-width: 1200px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1px solid #d1d5db;
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background: #e5e7eb;
+      font-weight: bold;
+    }
+    .formula {
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      color: #1f2937;
+      white-space: nowrap;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Planilla Excel / Google Sheets - Empujes sísmicos MKS</h1>
+
+  <div class="sheet">
+    <h2>Hoja 1: Datos</h2>
+    <table>
+      <tr><th>Celda</th><th>Etiqueta</th><th>Valor</th></tr>
+      <tr><td>A1</td><td>H [m]</td><td>4.0</td></tr>
+      <tr><td>A2</td><td>gamma [kgf/m3]</td><td>18</td></tr>
+      <tr><td>A3</td><td>phi [°]</td><td>30</td></tr>
+      <tr><td>A4</td><td>c [kgf/m2]</td><td>0</td></tr>
+      <tr><td>A5</td><td>delta [°]</td><td>0</td></tr>
+      <tr><td>A6</td><td>beta [°]</td><td>0</td></tr>
+      <tr><td>A7</td><td>alpha [°]</td><td>90</td></tr>
+      <tr><td>A8</td><td>kh [g]</td><td>0.12</td></tr>
+      <tr><td>A9</td><td>kv [g]</td><td>0.05</td></tr>
+      <tr><td>A10</td><td>q [kgf/m2]</td><td>0</td></tr>
+      <tr><td>A11</td><td>water_table [m]</td><td>0</td></tr>
+    </table>
+
+    <h2>Hoja 2: Resultados</h2>
+    <table>
+      <tr><th>Celda</th><th>Concepto</th><th>Fórmula / valor</th></tr>
+      <tr>
+        <td>D1</td><td>theta [rad]</td>
+        <td class="formula">=ATAN(B8/(1-B9))</td>
+      </tr>
+      <tr>
+        <td>D2</td><td>theta [°]</td>
+        <td class="formula">=DEGREES(E1)</td>
+      </tr>
+      <tr>
+        <td>D3</td><td>gamma_eff</td>
+        <td class="formula">=B2*(1-B9)</td>
+      </tr>
+      <tr>
+        <td>D4</td><td>Kae</td>
+        <td class="formula">=(COS(RADIANS(B3)+E1)^2) / (COS(RADIANS(B7)+RADIANS(B5))^2 * COS(RADIANS(B6)-E1) * (1 + SQRT((SIN((RADIANS(B3)+E1)+(RADIANS(B7)+RADIANS(B5)))*SIN((RADIANS(B3)+E1)-(RADIANS(B6)-E1)))/(COS(RADIANS(B7)+RADIANS(B5))*COS(RADIANS(B6)-E1))))^2)</td>
+      </tr>
+      <tr>
+        <td>D5</td><td>Pa [kgf/m]</td>
+        <td class="formula">=SI(B11&lt;B1;0.5*E3*B1^2*E4 + B10*B1*E4 - 2*B4*B1*SQRT(E4) + 0.5*1000*(B1-B11)^2;0.5*E3*B1^2*E4 + B10*B1*E4 - 2*B4*B1*SQRT(E4))</td>
+      </tr>
+      <tr>
+        <td>D6</td><td>Kpe</td>
+        <td class="formula">=(COS(RADIANS(B3)+E1)^2) / (COS(RADIANS(B7)-RADIANS(B5))^2 * COS(RADIANS(B6)+E1) * (1 - SQRT((SIN((RADIANS(B3)+E1)-(RADIANS(B7)-RADIANS(B5)))*SIN((RADIANS(B3)+E1)+(RADIANS(B6)+E1)))/(COS(RADIANS(B7)-RADIANS(B5))*COS(RADIANS(B6)+E1))))^2)</td>
+      </tr>
+      <tr>
+        <td>D7</td><td>Pp [kgf/m]</td>
+        <td class="formula">=SI(B11&lt;B1;0.5*E3*B1^2*E6 + B10*B1*E6 + 2*B4*B1*SQRT(E6) + 0.5*1000*(B1-B11)^2;0.5*E3*B1^2*E6 + B10*B1*E6 + 2*B4*B1*SQRT(E6))</td>
+      </tr>
+      <tr>
+        <td>D8</td><td>FS = Pp/Pa</td>
+        <td class="formula">=SI(E5=0;0;E7/E5)</td>
+      </tr>
+      <tr>
+        <td>D9</td><td>Evaluación</td>
+        <td class="formula">=SI(E8&lt;1;"CRITICO";SI(E8&lt;1.5;"MARGINAL";"ACEPTABLE"))</td>
+      </tr>
+    </table>
+
+    <h2>Nota</h2>
+    <p>Esta plantilla representa el cálculo sísmico con Mononobe-Okabe en sistema MKS. Si quieres, puedo dejarte una versión con varias filas para varios casos en la misma hoja.</p>
+  </div>
+</body>
+</html>
